@@ -10,11 +10,13 @@ var url = "mongodb://jitindrafartiyal-meanapi-3821685:27017/contactlist";
 
 // use middleware
 
-app.use(bodyParser.json);
-app.use(bodyParser.urlencoded({ extended: false }))
+
+
 // define the routes
 
 app.use(express.static(path.join(__dirname,'/public')));
+app.use(bodyParser.json());
+
 
 app.get('/contactlist',function(req, res){
     console.log('I recieved a GET request'); 
@@ -41,7 +43,23 @@ app.get('/contactlist',function(req, res){
 });
 
 app.post('/addcontact',function(req, res){
-    console.log(req.body);
+    console.log('Adding user contact details : ',req.body);
+    mongo.connect(url,function(err,db){
+        if(err != null)
+            console.log('Error in connecting to database');
+        else
+        {
+            db.collection('contacts').insert(req.body,function(err,doc){
+                if(err != null)
+                    console.log('Error in inserting database');
+                else
+                {
+                    console.log('Successfully added contact details');
+                     res.json(req.body);
+                }     
+            });
+        }
+    });
 });
 
 // start the server
