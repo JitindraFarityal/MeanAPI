@@ -9,6 +9,11 @@ function($scope,$http){
         $scope.contactList = response;
     });
     
+    $scope.addContact = function(){
+        console.log('Got data from the user as : ',$scope.contact);
+        $http.post('/addcontact',$scope.contact);
+    }
+    
     
 }
 ]);

@@ -1,36 +1,47 @@
 var express = require('express');
 var path = require('path');
+var mongo = require('mongodb').MongoClient;
+var bodyParser = require('body-parser');
+
 var app = express();
+var url = "mongodb://jitindrafartiyal-meanapi-3821685:27017/contactlist";
 
 // configure app
 
 // use middleware
 
+app.use(bodyParser.json);
+app.use(bodyParser.urlencoded({ extended: false }))
 // define the routes
 
 app.use(express.static(path.join(__dirname,'/public')));
 
 app.get('/contactlist',function(req, res){
-   console.log('I recieved a GET request'); 
-   
-   var person1 = {
-        name:'Jay',
-        email:'jayfartiyal@hotmail.com',
-        number:'9886762064'
-    };
-    var person2 = {
-        name:'Preethi',
-        email:'preethika@hotmail.com',
-        number:'9886762064'
-    };
-    var person3 = {
-        name:'Utkarsh Goel',
-        email:'ugoel@hotmail.com',
-        number:'9886762064'
-    };
-    
-    var contactList = [person1,person2,person3];
-    res.json(contactList);
+    console.log('I recieved a GET request'); 
+    var result = [];
+
+    mongo.connect(url,function(err,db){
+        if(err != null)
+            console.log('Error in connecting to database');
+        else
+        {
+            console.log('Successfully connected to database');
+            var cursor = db.collection('contacts').find();
+            
+            cursor.forEach(function(doc,err){
+                if(err != null)
+                    console.log('Unable to fetch data');
+                else    
+                    result.push(doc);    
+            },function(){
+                res.json(result);
+            });
+        }
+   });
+});
+
+app.post('/addcontact',function(req, res){
+    console.log(req.body);
 });
 
 // start the server
