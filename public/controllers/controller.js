@@ -8,7 +8,7 @@ function($scope,$http){
         $http.get('/contactlist').success(function(response){
             console.log('Loading the data from the database');
             $scope.contactList = response;
-            $scope.contact;
+            $scope.contact = "";
         });
     }
     refresh();
@@ -26,6 +26,22 @@ function($scope,$http){
         $http.delete('/contactlist/'+id).success(function(response){
             console.log('Successfully deleted the use data');
             refresh();
+        });
+    }
+    
+    $scope.edit = function(id){
+        console.log('Editing the user data : ',id);
+        $http.get('/contactlist/'+id,$scope).success(function(response){
+           $scope.contact = response;
+           
+        });
+    }
+    
+    $scope.update = function(){
+        console.log('Updating the user data :',$scope.contact);
+        $http.put('/contactlist/'+$scope.contact._id,$scope.contact).success(function(response){
+            console.log('Successfully update the user id ',$scope.contact._id);
+            refresh();   
         });
     }
 }

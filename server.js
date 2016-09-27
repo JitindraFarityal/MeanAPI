@@ -86,6 +86,50 @@ app.delete('/contactlist/:id',function(req, res){
     });
 });
 
+app.get('/contactlist/:id',function(req, res){
+    var id = req.params.id;
+    console.log('Finding the user with id : ',id);
+    mongo.connect(url,function(err,db){
+        if(err != null)
+            console.log('Error in connecting to database');
+        else
+        {
+            console.log('Successfully connected to database');
+            db.collection('contacts').findOne({_id:ObjectId(id)},function(err,doc){
+                if(err != null)
+                    console.log('No such element present');
+                else
+                {
+                    console.log('Element found ',doc);
+                    res.json(doc);
+                }
+            });
+        }
+    });
+});
+
+app.put('/contactlist/:id',function(req, res){
+    var id = req.params.id;
+    console.log('Got request for updation of user id :',id);
+    mongo.connect(url,function(err,db){
+        if(err != null)
+            console.log('Error in connecting to database');
+        else
+        {
+            console.log('Successfully connected to database');
+            db.collection('contacts').updateOne({_id:ObjectId(id)},{$set:{name:req.body.name,email:req.body.email,number:req.body.number}},function(err,doc){
+                if(err != null)
+                    console.log('Error in updation');
+                else
+                {
+                    console.log('Successfully updated the element');
+                    res.json(doc);
+                }
+            });
+        }   
+    });
+});
+
 // start the server
 
 var port = process.env.PORT || 8080;
